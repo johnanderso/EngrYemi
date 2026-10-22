@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Day in Your Honour, Sir</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f0e4;--text:#1c1712;--gold:#8f6b1f;--line:#1c171233;--chip:#1c17120d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0e0c10;--text:#f3ece0;--gold:#d4af6a;--line:#f3ece033;--chip:#f3ece00d}}
+:root[data-theme="dark"]{--bg:#0e0c10;--text:#f3ece0;--gold:#d4af6a;--line:#f3ece033;--chip:#f3ece00d}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden;transition:background 1.2s,color 1.2s}
+body.night{--bg:#0b090d;--text:#f3ece0;--gold:#d4af6a;--line:#f3ece033;--chip:#f3ece00d}
+.stage{display:none;width:100%;max-width:560px;padding:28px 24px;text-align:center}
+.stage.on{display:block;animation:in 1s ease}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.serif,h1,h2{font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif;font-weight:400}
+h1{font-size:clamp(2.4rem,10vw,3.8rem);line-height:1.05;margin:.25em 0;letter-spacing:.01em}
+h2{font-size:clamp(1.8rem,7vw,2.4rem);margin:.2em 0}
+.eyebrow{font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+p{line-height:1.65;opacity:.85;font-size:1rem}
+.rule{width:56px;height:1px;background:var(--gold);margin:18px auto}
+button{font:inherit;cursor:pointer}
+.btn{background:transparent;color:var(--gold);border:1px solid var(--gold);padding:13px 34px;letter-spacing:.2em;text-transform:uppercase;font-size:.75rem;transition:.3s}
+.btn:hover:not(:disabled){background:var(--gold);color:var(--bg)}
+.btn:disabled{opacity:.3;cursor:default}
+#curtain{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;pointer-events:auto}
+#curtain.gone{pointer-events:none}
+.pane{position:absolute;top:0;bottom:0;width:51%;background:linear-gradient(90deg,#3a0d16,#5c1422 50%,#3a0d16);transition:transform 2s cubic-bezier(.7,0,.2,1);box-shadow:inset 0 0 80px #0009}
+.pane.l{left:0}.pane.r{right:0}
+.open .pane.l{transform:translateX(-102%)}.open .pane.r{transform:translateX(102%)}
+.intro{position:relative;z-index:2;text-align:center;color:#f3ece0;padding:24px;transition:opacity .8s}
+.open .intro{opacity:0;pointer-events:none}
+.intro .btn{color:#d4af6a;border-color:#d4af6a}
+.intro .btn:hover{background:#d4af6a;color:#3a0d16}
+#dots{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:0;right:0;display:flex;justify-content:center;gap:10px;z-index:5}
+#dots i{width:6px;height:6px;border-radius:50%;border:1px solid var(--gold);transition:.5s}
+#dots i.d{background:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0}
+.chip{background:var(--chip);color:var(--text);border:1px solid var(--line);padding:10px 20px;border-radius:999px;font-family:"Cormorant Garamond",Georgia,serif;font-size:1.25rem;transition:.3s}
+.chip.sel{background:var(--gold);color:var(--bg);border-color:var(--gold);transform:translateY(-2px)}
+.candle{position:relative;width:34px;height:150px;margin:50px auto 18px;background:linear-gradient(90deg,#d9cdb4,#f6efe0 45%,#cdbf9f);border-radius:4px 4px 0 0}
+.candle::before{content:"";position:absolute;left:50%;top:-6px;width:2px;height:10px;background:#222;margin-left:-1px}
+.flame{position:absolute;left:50%;top:-52px;width:22px;height:46px;margin-left:-11px;background:radial-gradient(ellipse at 50% 70%,#fff8d0 0,#ffc24a 45%,#ff7a1a 70%,transparent 72%);border-radius:50% 50% 50% 50%/65% 65% 35% 35%;filter:drop-shadow(0 0 22px #ffb347);transform-origin:50% 100%;animation:fl .25s infinite alternate;transition:opacity .6s,transform .3s}
+@keyframes fl{to{transform:scale(1.07,.94) rotate(1.5deg)}}
+.smoke{position:absolute;left:50%;top:-20px;width:3px;height:0;background:linear-gradient(#fff8,transparent);margin-left:-1px;opacity:0}
+.out .flame{opacity:0;animation:none}
+.out .smoke{animation:sm 3s forwards}
+@keyframes sm{0%{height:0;opacity:.8}100%{height:120px;opacity:0;transform:translateY(-60px) skewX(14deg)}}
+.glow{position:absolute;left:50%;top:-60px;width:260px;height:260px;margin-left:-130px;background:radial-gradient(#ffb34755,transparent 65%);transition:opacity 1s}
+.out .glow{opacity:0}
+.meter{width:200px;height:2px;background:var(--line);margin:18px auto}
+.meter b{display:block;height:100%;width:0;background:var(--gold)}
+#blow{user-select:none;-webkit-user-select:none;touch-action:none}
+textarea{width:100%;min-height:110px;background:var(--chip);color:var(--text);border:1px solid var(--line);padding:16px;font:italic 1.35rem/1.4 "Cormorant Garamond",Georgia,serif;resize:none;margin:16px 0}
+textarea:focus{outline:1px solid var(--gold)}
+.release{animation:rel 3.2s forwards}
+@keyframes rel{to{opacity:0;transform:translateY(-140px) scale(.9);filter:blur(10px)}}
+video{display:block;width:100%;max-width:340px;max-height:62vh;margin:18px auto 0;background:#000;border:1px solid var(--gold)}
+.pic{width:132px;height:132px;border-radius:50%;object-fit:cover;object-position:50% 38%;border:1px solid var(--gold);padding:5px;margin-bottom:14px}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:10}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+#q{min-height:3.6em}#qr{min-height:3.6em;font-style:italic;color:var(--gold);font-family:"Cormorant Garamond",Georgia,serif;font-size:1.3rem}
+#prof{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:44px;margin:10px 0}
+.chip.sm{font-size:1rem;padding:6px 16px;animation:in .6s}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div id="dots"></div>
+
+<div id="curtain">
+  <div class="pane l"></div><div class="pane r"></div>
+  <div class="intro">
+    <div class="eyebrow">A private celebration for Engr. Yemi</div>
+    <h1 id="who"></h1>
+    <div class="rule"></div>
+    <button class="btn" id="begin">Open the curtain</button>
+  </div>
+</div>
+
+<section class="stage" id="s0">
+  <div class="eyebrow">Chapter I · The Inquiry</div>
+  <h2 id="q"></h2>
+  <p id="qr"></p>
+  <div class="row"><button class="btn" id="yes">Yes</button><button class="btn" id="no">No</button></div>
+  <div class="eyebrow" style="margin-top:28px">The gentleman’s profile</div>
+  <div id="prof"></div>
+</section>
+
+<section class="stage" id="s1">
+  <div class="eyebrow">Chapter II</div>
+  <h2>The flame</h2>
+  <p>Hold the button and breathe out slowly.</p>
+  <div class="candle" id="candle"><div class="glow"></div><div class="flame" id="flame"></div><div class="smoke"></div></div>
+  <div class="meter"><b id="mb"></b></div>
+  <button class="btn" id="blow">Hold to blow</button>
+</section>
+
+<section class="stage" id="s2">
+  <div class="eyebrow">Chapter III</div>
+  <h2>Make a wish</h2>
+  <p>Write it down. It stays between you and the night sky. Nothing is saved.</p>
+  <textarea id="wish" maxlength="140" placeholder="I wish…"></textarea>
+  <button class="btn" id="release" disabled>Release it</button>
+</section>
+
+<section class="stage" id="s3">
+  <img class="pic" src="assets/portrait.jpg" alt="Engr. Yemi">
+  <div class="eyebrow">Happy Birthday, Engr. Yemi</div>
+  <h1 id="fin"></h1>
+  <div class="rule"></div>
+  <div class="chips" id="fp"></div>
+  <p class="serif" style="font-size:1.35rem;font-style:italic" id="ded"></p>
+  <p id="msg"></p>
+  <video id="vid" controls playsinline preload="auto" hidden></video>
+  <div class="row"><button class="btn" id="toast">Raise a toast</button><button class="btn" id="again">Replay</button></div>
+</section>
+
+<script>
+(function(){
+  // ---- Personalise here ----
+  var CONFIG = {
+    title: "A Day in Your Honour, Sir",
+    name: "Engr. Yemi",
+    message: "Here is a little something made especially for you.",
+    videoUrl: "assets/tribute.mp4"
+  };
+  // --------------------------
+  var $ = function(id){return document.getElementById(id)};
+  var picked = [], cur = -1;
+  $("who").textContent = CONFIG.title; $("msg").textContent = CONFIG.message;
+
+  var dots = $("dots"); for(var i=0;i<4;i++) dots.appendChild(document.createElement("i"));
+  function show(n){
+    cur = n;
+    document.querySelectorAll(".stage").forEach(function(s){s.classList.remove("on")});
+    $("s"+n).classList.add("on");
+    dots.childNodes.forEach(function(d,i){d.className = i<=n ? "d" : ""});
+    document.body.classList.toggle("night", n===1 || n===2);
+  }
+
+  // particles (gold sparks + fireworks)
+  var cv = $("fx"), cx = cv.getContext("2d"), P = [], raf = 0;
+  function size(){cv.width = innerWidth; cv.height = innerHeight}
+  size(); addEventListener("resize", size);
+  function spark(x,y,n){
+    var cols = ["#d4af6a","#f3d98b","#fff3c4","#b8893a"];
+    for(var i=0;i<n;i++){var a=Math.random()*6.283,s=1+Math.random()*5;P.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:cols[i%4]})}
+    if(!raf) tick();
+  }
+  function tick(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    P = P.filter(function(p){return p.l>0});
+    P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.vx*=.99;p.l-=.012;cx.globalAlpha=Math.max(p.l,0);cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,2,0,6.283);cx.fill()});
+    raf = P.length ? requestAnimationFrame(tick) : 0;
+  }
+  function show_fireworks(k){
+    for(var i=0;i<k;i++) setTimeout(function(){spark(cv.width*(.15+Math.random()*.7),cv.height*(.15+Math.random()*.4),70)}, i*450);
+  }
+
+  // curtain
+  $("begin").onclick = function(){
+    $("curtain").classList.add("open");
+    setTimeout(function(){$("curtain").classList.add("gone");show(0);ask("q1")}, 1400);
+    setTimeout(function(){$("curtain").style.display="none"}, 2300);
+  };
+
+  // chapter I: branching inquiry. Each answer: [reply, next question, trait]
+  var T = {
+    q1:{q:"Sir, a man of your standing surely rose early today. Did you?",
+      y:["Admirable. Discipline suits you.","q2a","Disciplined"],
+      n:["Wise. A great man lets the day wait for him.","q2b","Unhurried"]},
+    q2a:{q:"Then today has surely been planned to the minute, hasn’t it?",
+      y:["Naturally. Precision is your signature.","q3","Meticulous"],
+      n:["Even better. Confidence needs no schedule.","q3","Effortless"]},
+    q2b:{q:"Then at least tell us a proper breakfast was involved?",
+      y:["Excellent. Every great day starts well fed.","q3","Well-fed"],
+      n:["Bold. We shall compensate with cake.","q3","Bold"]},
+    q3:{q:"Be honest, Sir: has this past year made you wiser?",
+      y:["Modesty is optional today. Quite right.","q4","Wise"],
+      n:["Admitting it is the very proof that it did.","q4","Humble"]},
+    q4:{q:"One last matter. Are you ready for the grand finale?",
+      y:["Splendid. Then we proceed.",null,""],
+      n:["A pity. The show proceeds regardless.",null,""]}
+  };
+  var node = "q1", locked = false, typing = 0;
+  function typeIn(el, txt){
+    clearInterval(typing); el.textContent = ""; var i = 0;
+    typing = setInterval(function(){el.textContent = txt.slice(0, ++i); if(i >= txt.length) clearInterval(typing)}, 22);
+  }
+  function ask(k){
+    node = k; locked = false; $("qr").textContent = "";
+    typeIn($("q"), T[k].q); $("yes").disabled = $("no").disabled = false;
+  }
+  function answer(a){
+    if(locked) return; locked = true;
+    var r = T[node][a];
+    $("yes").disabled = $("no").disabled = true;
+    typeIn($("qr"), r[0]);
+    if(r[2]){
+      picked.push(r[2]);
+      var c = document.createElement("span"); c.className = "chip sel sm"; c.textContent = r[2]; $("prof").appendChild(c);
+      spark(innerWidth/2, innerHeight*.5, 30);
+    }
+    setTimeout(function(){
+      if(r[1]) ask(r[1]);
+      else { show_fireworks(2); setTimeout(function(){show(1)}, 1700); }
+    }, 2600);
+  }
+  $("yes").onclick = function(){answer("y")};
+  $("no").onclick = function(){answer("n")};
+
+  // chapter II
+  var prog = 0, timer = 0, done = false, fl = $("flame");
+  function setProg(v){prog=Math.max(0,Math.min(100,v)); $("mb").style.width=prog+"%"; fl.style.transform="rotate("+(prog*.35)+"deg) scaleY("+(1-prog/260)+")"}
+  function hold(on){
+    if(done) return; clearInterval(timer);
+    timer = setInterval(function(){
+      setProg(prog + (on ? 2.2 : -3));
+      if(prog>=100){
+        done = true; clearInterval(timer); $("candle").classList.add("out");
+        setTimeout(function(){show(2)}, 2600);
+      }
+    }, 30);
+  }
+  var bl = $("blow");
+  ["pointerdown"].forEach(function(e){bl.addEventListener(e,function(ev){ev.preventDefault();hold(true)})});
+  ["pointerup","pointerleave","pointercancel"].forEach(function(e){bl.addEventListener(e,function(){hold(false)})});
+
+  // chapter III
+  $("wish").oninput = function(){$("release").disabled = !this.value.trim()};
+  $("release").onclick = function(){
+    var t = $("wish"); t.classList.add("release"); this.disabled = true;
+    var r = t.getBoundingClientRect(); spark(r.left+r.width/2, r.top+r.height/2, 80);
+    setTimeout(function(){
+      show(3);
+      $("fin").textContent = CONFIG.title;
+      $("ded").textContent = "“" + picked[0] + ", " + picked[1].toLowerCase() + " and " + picked[2].toLowerCase() + ". That is who you are, " + CONFIG.name + ".”";
+      picked.forEach(function(t){var c = document.createElement("span"); c.className = "chip sel sm"; c.textContent = t; $("fp").appendChild(c)});
+      show_fireworks(5);
+      var v = $("vid");
+      if(CONFIG.videoUrl){v.src = CONFIG.videoUrl; v.hidden = false; var p = v.play(); if(p && p.catch) p.catch(function(){})}
+    }, 2400);
+  };
+
+  // finale
+  var song = new Audio("assets/toast.m4a"); song.preload = "auto";
+  $("toast").onclick = function(){
+    $("vid").pause(); song.currentTime = 0;
+    var p = song.play(); if(p && p.catch) p.catch(function(){});
+    show_fireworks(16);
+  };
+  $("again").onclick = function(){
+    $("vid").pause(); song.pause(); picked = []; done = false; setProg(0);
+    $("prof").innerHTML = ""; $("fp").innerHTML = ""; ask("q1");
+    $("candle").classList.remove("out");
+    $("wish").value = ""; $("wish").classList.remove("release"); $("release").disabled = true;
+    show(0);
+  };
+})();
+</script>
+</body>
+</html>
